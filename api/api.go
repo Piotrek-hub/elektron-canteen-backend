@@ -13,6 +13,9 @@ func Start() error {
   authRouter := routers.NewAuthRouter(r, *controllers.NewAuthController())
   authRouter.Initialize()
 
+  menuRouter := routers.NewMenuRouter(r, *controllers.NewMenuController())
+  menuRouter.Initialize()
+
   r.Run()
   return nil
 }	

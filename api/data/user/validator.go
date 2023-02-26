@@ -3,6 +3,7 @@ package user
 import "errors"
 
 type Validator struct {
+
 }
 
 func NewValidator() *Validator {
