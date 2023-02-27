@@ -1,14 +1,15 @@
 package menu
 
 import (
-  "log"
-  "context")
+	"context"
+	"time"
+)
 
 type Model interface {
   Create(ctx context.Context, menu Menu) (*Menu, error)
 
-//  QueryAll(ctx context.Context) ([]Menu, error)
-//  QueryByDay(ctx context.Context, id primitive.ObjectID) (User, error)
+  QueryAll(ctx context.Context) ([]Menu, error)
+  QueryByDay(ctx context.Context, day time.Time) (*Menu, error)
 }
 
 type modelImpl struct {
@@ -29,9 +30,15 @@ func Instance() Model {
 
 
 func (m modelImpl) Create(ctx context.Context, menu Menu) (*Menu, error) {
-  log.Println(menu)
   return nil, nil
 }
 
+func (m modelImpl) QueryAll(ctx context.Context) ([]Menu, error) {
+  return nil, nil 
+}
+
+func (m modelImpl) QueryByDay(ctx context.Context, day time.Time) (*Menu, error) {
+  return nil, nil
+}
 
 

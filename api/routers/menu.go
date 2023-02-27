@@ -2,7 +2,7 @@ package routers
 
 import (
 	"elektron-canteen/api/controllers"
-	"encoding/json"
+	"elektron-canteen/api/data/menu"
 	"log"
 	"net/http"
 
@@ -28,20 +28,25 @@ func (r *MenuRouter) Initialize() {
 }
 
 func (r *MenuRouter) getMenu(c *gin.Context) {
-  var f interface{}
-	  
 
-  if err := c.BindJSON(&f); err != nil {
-	log.Println(err)
-  }
-
-  log.Println("F", f)
+//  menu := r.controller.GetByDay()
 
   c.JSON(http.StatusOK, gin.H{"message": "get menu"})
 }
+
 func (r *MenuRouter) addMenu(c *gin.Context) {
+  var mr menu.AddRequest
+
+  if err := c.BindJSON(&mr); err != nil {
+	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	return ;
+  }
+  
+  log.Println("menu", mr)
+
   c.JSON(http.StatusOK, gin.H{"message": "add menu"})
 }
+
 func (r *MenuRouter) updateMenu(c *gin.Context) {
   c.JSON(http.StatusOK, gin.H{"message": "update menu"})
 }

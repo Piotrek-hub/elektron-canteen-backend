@@ -1,8 +1,10 @@
 package controllers
 
 import (
-//	"context"
+	//	"context"
+	"context"
 	"elektron-canteen/api/data/menu"
+	"time"
 )
 
 type MenuController struct {
@@ -22,4 +24,15 @@ func (c MenuController) Add(menu menu.Menu) error {
   c.validator.ValidateMenu(menu)
 
   return nil
+}
+
+func (c MenuController) GetByDay(day time.Time) (*menu.Menu, error) {
+  ctx := context.Background()
+
+  m, err := c.menu.QueryByDay(ctx, day)
+  if err != nil {
+	return nil, err
+  }
+
+  return m, nil
 }

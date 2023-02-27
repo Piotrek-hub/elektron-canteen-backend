@@ -1,12 +1,13 @@
 package dish 
 
 type Dish struct {
-  Name string 
-  Addition []Addition 
+  Name string`json:"name"`
+  Additions []string `json:"additions"`
+  Salads []string `json:"salads"`
 }
 
 
 type Addition struct {
-  Name string
+  Name string`json:"name"`
 }
 

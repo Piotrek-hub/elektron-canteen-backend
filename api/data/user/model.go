@@ -32,7 +32,6 @@ func Instance() Model {
 
 
 func (m modelImpl) Create(ctx context.Context, nu NewUser) (*User, error) {
-  log.Println(nu)
   return nil, nil
 }
 

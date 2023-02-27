@@ -29,57 +29,39 @@ func (r *AuthRouter) Initialize() {
 }
 
 func (r *AuthRouter) login(c *gin.Context) {
-	email := c.PostForm("email")
-	name := c.PostForm("name")
-	surname := c.PostForm("surname")
-	password := c.PostForm("password")
-
-	nu := user.NewUser{
-	  Email: email,
-	  Name: name,
-	  Surname: surname,
-	  Password: password,
-	}
-	
+  var nu user.NewUser			
+  if err := c.BindJSON(&nu); err != nil {
+	c.JSON(http.StatusBadRequest, gin.H{
+	  "error": err.Error() ,
+	})
+  }
 
 	if err := r.controller.Add(nu); err != nil {
 	  c.JSON(http.StatusBadRequest, gin.H{
-		"status": http.StatusBadRequest,
 		"error": err.Error(),
 	  })
 	  return; 
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-	  "status": http.StatusOK,
+	"message": "Login successfull",
 	})
 	return;
 }
 
 func (r *AuthRouter) register(c *gin.Context) {
-	email := c.PostForm("email")
-	name := c.PostForm("name")
-	surname := c.PostForm("surname")
-	password := c.PostForm("password")
-
-	nu := user.NewUser{
-	  Email: email,
-	  Name: name,
-	  Surname: surname,
-	  Password: password,
-	}
-	
+	var nu user.NewUser			
+	c.BindJSON(&nu)
 
 	if err := r.controller.Add(nu); err != nil {
 	  c.JSON(http.StatusBadRequest, gin.H{
-		"status": http.StatusBadRequest,
 		"error": err.Error(),
 	  })
 	  return; 
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-	  "status": http.StatusOK,
+	  "message": "Register successfull",
 	})
 	return;
 }

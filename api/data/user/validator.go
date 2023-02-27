@@ -24,6 +24,5 @@ func (v Validator) ValidateUser(user NewUser) error {
 		return errors.New("password is missing")
 	}
 
-
 	return nil
 }
