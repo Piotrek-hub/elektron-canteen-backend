@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
-func main()  {
-  if err :=	api.Start(); err != nil  {
-	log.Fatal(err)
-	return;
-  }
+func main() {
+	if err := api.Start(); err != nil {
+		log.Fatal(err)
+		return
+	}
 }
