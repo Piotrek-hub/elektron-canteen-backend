@@ -2,24 +2,19 @@ package database
 
 import (
 	"context"
+	"elektron-canteen/api/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetClient(dbName string) (*mongo.Client, error) {
+func GetClient(dbName string, cfg config.Config) (*mongo.Client, error) {
 
-	uri := "mongodb://dev:Qwer1234@localhost:27017/" + dbName
+	uri := "mongodb://" + cfg.Get("mongo_username") + ":" + cfg.Get("mongo_password") + "@" + cfg.Get("mongo_server") + "/" + dbName
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}
-
-	//defer func() {
-	//	if err := client.Disconnect(context.TODO()); err != nil {
-	//		panic(err)
-	//	}
-	//}()
 
 	return client, nil
 }

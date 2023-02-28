@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"elektron-canteen/api/config"
 	"elektron-canteen/foundation/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,20 +19,23 @@ type Model interface {
 }
 
 type modelImpl struct {
-	db *mongo.Client
+	db  *mongo.Client
+	cfg config.Config
 }
 
 var instance Model
 
 func Instance() Model {
 	if instance == nil {
-		db, err := database.GetClient("users")
+		c := config.Load()
+		db, err := database.GetClient("users", c)
 		if err != nil {
 			panic(err)
 		}
 
 		instance = &modelImpl{
-			db: db,
+			db:  db,
+			cfg: c,
 		}
 	}
 

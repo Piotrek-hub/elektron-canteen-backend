@@ -3,65 +3,67 @@ package routers
 import (
 	"elektron-canteen/api/controllers"
 	"elektron-canteen/api/data/user"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthRouter struct {
-	router *gin.Engine
+	router     *gin.Engine
 	controller controllers.AuthController
 }
 
 func NewAuthRouter(r *gin.Engine, c controllers.AuthController) *AuthRouter {
-  return &AuthRouter{
-	router: r,
-	controller: c,
-  }
-} 
+	return &AuthRouter{
+		router:     r,
+		controller: c,
+	}
+}
 
 func (r *AuthRouter) Initialize() {
-  ar := r.router.Group("/auth")
+	ar := r.router.Group("/auth")
 
-  ar.POST("/login", r.login)
-
-  ar.POST("/register", r.register)
+	ar.POST("/login", r.login)
+	ar.POST("/register", r.register)
 }
 
 func (r *AuthRouter) login(c *gin.Context) {
-  var nu user.NewUser			
-  if err := c.BindJSON(&nu); err != nil {
-	c.JSON(http.StatusBadRequest, gin.H{
-	  "error": err.Error() ,
-	})
-  }
-
-	if err := r.controller.Add(nu); err != nil {
-	  c.JSON(http.StatusBadRequest, gin.H{
-		"error": err.Error(),
-	  })
-	  return; 
+	var nu user.NewUser
+	if err := c.BindJSON(&nu); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+	user, err := r.controller.Login(nu)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
+	log.Println("Found user", user)
+
 	c.JSON(http.StatusOK, gin.H{
-	"message": "Login successfull",
+		"message": "Login successfull",
 	})
-	return;
+	return
 }
 
 func (r *AuthRouter) register(c *gin.Context) {
-	var nu user.NewUser			
+	var nu user.NewUser
 	c.BindJSON(&nu)
 
-	if err := r.controller.Add(nu); err != nil {
-	  c.JSON(http.StatusBadRequest, gin.H{
-		"error": err.Error(),
-	  })
-	  return; 
+	if err := r.controller.Register(nu); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-	  "message": "Register successfull",
+		"message": "Register successfull",
 	})
-	return;
+	return
 }
