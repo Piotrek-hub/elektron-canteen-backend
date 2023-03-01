@@ -29,14 +29,16 @@ func (c AuthController) Register(nu user.NewUser) error {
 		return err
 	}
 
-	user, err := c.user.QueryByEmail(ctx, nu.Email)
+	u, err := c.user.QueryByEmail(ctx, nu.Email)
 	if err != nil && err != mongo.ErrNoDocuments {
 		return err
 	}
 
-	if user.Surname != "" {
+	if u.Surname != "" {
 		return errors.New("User already exists")
 	}
+
+	nu.Role = user.NORMAL_ROLE
 
 	if _, err = c.user.Create(ctx, nu); err != nil {
 		return err

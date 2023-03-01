@@ -14,6 +14,7 @@ func Generate(user user.User) (string, error) {
 
 	claims["authorized"] = true
 	claims["user"] = user.ID.Hex()
+	claims["role"] = user.Role
 	claims["exp"] = time.Now().Add(time.Hour * 30).Unix()
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
