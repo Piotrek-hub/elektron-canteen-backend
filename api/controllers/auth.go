@@ -57,9 +57,9 @@ func (c AuthController) Login(nu user.NewUser) (user.User, error) {
 		return user, errors.New("User doesn't exists")
 	}
 
-	if err != nil {
-		return user, err
+	if nu.Password != user.Password {
+		return user, errors.New("Wrong password")
 	}
 
-	return user, nil
+	return user, err
 }

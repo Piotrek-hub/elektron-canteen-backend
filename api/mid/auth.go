@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"os"
 )
@@ -38,6 +39,14 @@ func Auth() gin.HandlerFunc {
 				}
 
 				user, err := user.Instance().QueryByID(context.TODO(), objID)
+				if err != nil {
+					if err == mongo.ErrNoDocuments {
+						c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "user not authorized"})
+						return
+					}
+					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+					return
+				}
 
 				if user.Email != "" {
 					c.Next()
