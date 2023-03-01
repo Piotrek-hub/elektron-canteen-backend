@@ -3,7 +3,7 @@ package routers
 import (
 	"elektron-canteen/api/controllers"
 	"elektron-canteen/api/data/user"
-	"log"
+	"elektron-canteen/foundation/jwt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -43,10 +43,11 @@ func (r *AuthRouter) login(c *gin.Context) {
 		return
 	}
 
-	log.Println("Found user", user)
+	jwtToken, err := jwt.GenerateJWT(user)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successfull",
+		"token":   jwtToken,
 	})
 	return
 }

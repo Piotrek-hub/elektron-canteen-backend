@@ -16,6 +16,7 @@ type Model interface {
 
 	QueryAll(ctx context.Context) ([]User, error)
 	QueryByEmail(ctx context.Context, email string) (User, error)
+	QueryByID(ctx context.Context, id primitive.ObjectID) (User, error)
 }
 
 type modelImpl struct {
@@ -69,6 +70,22 @@ func (m modelImpl) QueryByEmail(ctx context.Context, email string) (User, error)
 
 	var user User
 	err := coll.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return User{}, err
+		}
+		panic(err)
+	}
+
+	return user, nil
+}
+
+func (m modelImpl) QueryByID(ctx context.Context, id primitive.ObjectID) (User, error) {
+	coll := m.db.Database("users").Collection("users")
+
+	var user User
+	err := coll.FindOne(ctx, bson.D{{"_id", id}}).Decode(&user)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
