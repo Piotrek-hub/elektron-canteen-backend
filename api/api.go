@@ -19,6 +19,9 @@ func Start() error {
 	menuRouter := routers.NewMenuRouter(r, *controllers.NewMenuController())
 	menuRouter.Initialize()
 
+	userRouter := routers.NewUserRouter(r, *controllers.NewUserController())
+	userRouter.Initialize()
+
 	r.Run()
 
 	return nil

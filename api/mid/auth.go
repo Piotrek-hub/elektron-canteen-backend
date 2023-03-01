@@ -3,6 +3,7 @@ package mid
 import (
 	"context"
 	"elektron-canteen/api/data/user"
+	jwtutil "elektron-canteen/foundation/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,11 +27,7 @@ func Auth() gin.HandlerFunc {
 			}
 
 			if token.Valid {
-				claims := jwt.MapClaims{}
-				_, err := jwt.ParseWithClaims(c.Request.Header["Token"][0], claims, func(token *jwt.Token) (interface{}, error) {
-					return []byte(os.Getenv("JWT_SECRET_KEY")), nil
-				})
-
+				claims, err := jwtutil.DecodeIntoClaims(c.Request.Header["Token"][0])
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 				}

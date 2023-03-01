@@ -1,4 +1,4 @@
-package jwt
+package jwtutil
 
 import (
 	"elektron-canteen/api/data/user"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func GenerateJWT(user user.User) (string, error) {
+func Generate(user user.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -22,4 +22,16 @@ func GenerateJWT(user user.User) (string, error) {
 	}
 
 	return tokenString, err
+}
+
+func DecodeIntoClaims(token string) (jwt.MapClaims, error) {
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return claims, err
 }
