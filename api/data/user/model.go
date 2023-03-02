@@ -15,8 +15,8 @@ type Model interface {
 	//Delete(ctx context.Context, id primitive.ObjectID) error
 
 	QueryAll(ctx context.Context) ([]User, error)
-	QueryByEmail(ctx context.Context, email string) (User, error)
-	QueryByID(ctx context.Context, id primitive.ObjectID) (User, error)
+	QueryByEmail(ctx context.Context, email string) (*User, error)
+	QueryByID(ctx context.Context, id primitive.ObjectID) (*User, error)
 }
 
 type modelImpl struct {
@@ -28,15 +28,13 @@ var instance Model
 
 func Instance() Model {
 	if instance == nil {
-		c := config.Load()
 		db, err := database.GetClient()
 		if err != nil {
 			panic(err)
 		}
 
 		instance = &modelImpl{
-			db:  db,
-			cfg: c,
+			db: db,
 		}
 	}
 
@@ -44,9 +42,9 @@ func Instance() Model {
 }
 
 func (m modelImpl) Create(ctx context.Context, nu NewUser) (primitive.ObjectID, error) {
-	coll := m.db.Database("users").Collection("users")
+	coll := m.db.Database("elektron_canteen").Collection("users")
 
-	result, err := coll.InsertOne(context.TODO(), nu)
+	result, err := coll.InsertOne(ctx, nu)
 	if err != nil {
 		return primitive.ObjectID{}, err
 	}
@@ -54,7 +52,7 @@ func (m modelImpl) Create(ctx context.Context, nu NewUser) (primitive.ObjectID, 
 }
 
 func (m modelImpl) QueryAll(ctx context.Context) ([]User, error) {
-	coll := m.db.Database("users").Collection("users")
+	coll := m.db.Database("elektron_canteen").Collection("users")
 	cur, err := coll.Find(ctx, bson.D{})
 
 	var users []User
@@ -65,34 +63,34 @@ func (m modelImpl) QueryAll(ctx context.Context) ([]User, error) {
 	return users, nil
 }
 
-func (m modelImpl) QueryByEmail(ctx context.Context, email string) (User, error) {
-	coll := m.db.Database("users").Collection("users")
+func (m modelImpl) QueryByEmail(ctx context.Context, email string) (*User, error) {
+	coll := m.db.Database("elektron_canteen").Collection("users")
 
 	var user User
 	err := coll.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return User{}, err
+			return nil, err
 		}
 		panic(err)
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-func (m modelImpl) QueryByID(ctx context.Context, id primitive.ObjectID) (User, error) {
-	coll := m.db.Database("users").Collection("users")
+func (m modelImpl) QueryByID(ctx context.Context, id primitive.ObjectID) (*User, error) {
+	coll := m.db.Database("elektron_canteen").Collection("users")
 
 	var user User
 	err := coll.FindOne(ctx, bson.D{{"_id", id}}).Decode(&user)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return User{}, err
+			return nil, err
 		}
 		panic(err)
 	}
 
-	return user, nil
+	return &user, nil
 }

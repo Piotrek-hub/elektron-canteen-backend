@@ -9,14 +9,10 @@ import (
 func Start() error {
 	r := gin.Default()
 
-	authRouter := routers.NewAuthRouter(r, *controllers.NewAuthController())
-	authRouter.Initialize()
-
-	menuRouter := routers.NewMenuRouter(r, *controllers.NewMenuController())
-	menuRouter.Initialize()
-
-	userRouter := routers.NewUserRouter(r, *controllers.NewUserController())
-	userRouter.Initialize()
+	routers.NewAuthRouter(r, *controllers.NewAuthController()).Initialize()
+	routers.NewMenuRouter(r, *controllers.NewMenuController()).Initialize()
+	routers.NewUserRouter(r, *controllers.NewUserController()).Initialize()
+	routers.NewMealRouter(r, *controllers.NewMealController()).Initialize()
 
 	r.Run()
 

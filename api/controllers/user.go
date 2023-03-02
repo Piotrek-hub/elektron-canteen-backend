@@ -16,6 +16,6 @@ func NewUserController() *UserController {
 	}
 }
 
-func (c UserController) Get(userID primitive.ObjectID) (user.User, error) {
+func (c UserController) Get(userID primitive.ObjectID) (*user.User, error) {
 	return c.user.QueryByID(context.TODO(), userID)
 }

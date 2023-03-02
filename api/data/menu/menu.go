@@ -1,13 +1,11 @@
 package menu
 
 import (
-  "elektron-canteen/api/data/dish"
+	"elektron-canteen/api/data/meal"
 )
 
 type Menu struct {
-  Day string `json:"day"`
-  Dishes []dish.Dish `json:"dishes"`
-  AvailableDishes []dish.Dish `json:"availableDishes"`
+	Day            string      `json:"day"`
+	Meals          []meal.Meal `json:"meals"`
+	AvailableMeals []meal.Meal `json:"availableMeals"`
 }
-
-

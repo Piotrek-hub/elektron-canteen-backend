@@ -3,6 +3,7 @@ package routers
 import (
 	"elektron-canteen/api/controllers"
 	"elektron-canteen/api/data/menu"
+	"elektron-canteen/api/data/user"
 	"elektron-canteen/api/mid"
 	"log"
 	"net/http"
@@ -25,8 +26,12 @@ func NewMenuRouter(r *gin.Engine, c controllers.MenuController) *MenuRouter {
 func (r *MenuRouter) Initialize() {
 	r.router.Use(mid.Auth())
 	r.router.GET("/menu", r.getMenu)
-	r.router.POST("/menu", r.addMenu)
-	r.router.PATCH("/menu", r.updateMenu)
+
+	securedRoutes := r.router.Group("/menu")
+	securedRoutes.Use(mid.Role(user.ADMIN_ROLE))
+
+	securedRoutes.POST("", r.addMenu)
+	securedRoutes.PATCH("", r.updateMenu)
 }
 
 func (r *MenuRouter) getMenu(c *gin.Context) {

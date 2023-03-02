@@ -34,7 +34,7 @@ func (c AuthController) Register(nu user.NewUser) error {
 		return err
 	}
 
-	if u.Surname != "" {
+	if u != nil {
 		return errors.New("User already exists")
 	}
 
@@ -44,23 +44,23 @@ func (c AuthController) Register(nu user.NewUser) error {
 		return err
 	}
 
-	return nil
+	return err
 }
 
-func (c AuthController) Login(nu user.NewUser) (user.User, error) {
+func (c AuthController) Login(nu user.NewUser) (*user.User, error) {
 	ctx := context.Background()
 
 	if err := c.validator.ValidateUser(nu); err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	user, err := c.user.QueryByEmail(ctx, nu.Email)
 	if err == mongo.ErrNoDocuments {
-		return user, errors.New("User doesn't exists")
+		return nil, errors.New("User doesn't exists")
 	}
 
 	if nu.Password != user.Password {
-		return user, errors.New("Wrong password")
+		return nil, errors.New("Wrong password")
 	}
 
 	return user, err
