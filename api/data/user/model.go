@@ -29,7 +29,7 @@ var instance Model
 func Instance() Model {
 	if instance == nil {
 		c := config.Load()
-		db, err := database.GetClient("users", c)
+		db, err := database.GetClient()
 		if err != nil {
 			panic(err)
 		}

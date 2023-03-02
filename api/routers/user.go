@@ -55,12 +55,6 @@ func (r *UserRouter) getUserData(c *gin.Context) {
 		return
 	}
 
-	//jsonUser, err := json.Marshal(user)
-	//if err != nil {
-	//	responseWithError(c, err)
-	//	return
-	//}
-
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})

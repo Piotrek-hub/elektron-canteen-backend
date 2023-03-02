@@ -30,9 +30,6 @@ func (r *MenuRouter) Initialize() {
 }
 
 func (r *MenuRouter) getMenu(c *gin.Context) {
-
-	//  menu := r.controller.GetByDay()
-
 	c.JSON(http.StatusOK, gin.H{"message": "get menu"})
 }
 
