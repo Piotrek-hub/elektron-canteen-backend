@@ -11,8 +11,8 @@ type Meal struct {
 }
 
 type NewMeal struct {
-	Name      string   `json:"name"`
-	Price     float32  `json:"price"`
-	Additions []string `json:"additions"`
-	Salads    []string `json:"salads"`
+	Name      string   `bson:"name" json:"name"`
+	Price     float32  `bson:"price" json:"price"`
+	Additions []string `bson:"additions" json:"additions"`
+	Salads    []string `bson:"salads" json:"salads"`
 }

@@ -5,7 +5,6 @@ import (
 	"elektron-canteen/api/data/menu"
 	"elektron-canteen/api/data/user"
 	"elektron-canteen/api/mid"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,17 +24,37 @@ func NewMenuRouter(r *gin.Engine, c controllers.MenuController) *MenuRouter {
 
 func (r *MenuRouter) Initialize() {
 	r.router.Use(mid.Auth())
-	r.router.GET("/menu", r.getMenu)
+	r.router.GET("/menu/:day", r.getMenu)
 
 	securedRoutes := r.router.Group("/menu")
 	securedRoutes.Use(mid.Role(user.ADMIN_ROLE))
 
 	securedRoutes.POST("", r.addMenu)
 	securedRoutes.PATCH("", r.updateMenu)
+	securedRoutes.DELETE("/:day", r.deleteMenu)
 }
 
 func (r *MenuRouter) getMenu(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "get menu"})
+	day := c.Param("day")
+
+	m, err := r.controller.GetByDay(day)
+	if err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": m})
+}
+
+func (r *MenuRouter) deleteMenu(c *gin.Context) {
+	day := c.Param("day")
+
+	if err := r.controller.Delete(day); err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
 }
 
 func (r *MenuRouter) addMenu(c *gin.Context) {
@@ -46,11 +65,26 @@ func (r *MenuRouter) addMenu(c *gin.Context) {
 		return
 	}
 
-	log.Println("menu", mr)
+	if err := r.controller.Add(mr); err != nil {
+		responseWithError(c, err)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "add menu"})
 }
 
 func (r *MenuRouter) updateMenu(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "update menu"})
+	var m menu.Menu
+
+	if err := c.BindJSON(&m); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := r.controller.Update(m); err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": m})
 }

@@ -32,6 +32,7 @@ func (r *MealRouter) Initialize() {
 
 	securedRoutes.POST("", r.addMeal)
 	securedRoutes.PATCH("/:id", r.updateMeal)
+	securedRoutes.DELETE("/:id", r.deleteMeal)
 }
 
 func (r *MealRouter) getMeals(c *gin.Context) {
@@ -100,5 +101,21 @@ func (r *MealRouter) updateMeal(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Meal updated successfully"})
+
+}
+
+func (r *MealRouter) deleteMeal(c *gin.Context) {
+	mealID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	if err := r.controller.Delete(mealID); err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Meal deleted successfully"})
 
 }

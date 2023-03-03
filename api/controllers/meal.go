@@ -55,6 +55,12 @@ func (c MealController) Update(id primitive.ObjectID, nm meal.NewMeal) error {
 	return nil
 }
 
+func (c MealController) Delete(id primitive.ObjectID) error {
+	ctx := context.Background()
+
+	return c.meal.Delete(ctx, id)
+}
+
 func (c MealController) GetAll() ([]meal.Meal, error) {
 	ctx := context.Background()
 

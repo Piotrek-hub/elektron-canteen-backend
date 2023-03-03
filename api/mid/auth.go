@@ -10,12 +10,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.Request.Header["Token"] != nil {
-			token, err := jwt.Parse(c.Request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+
+		if c.Request.Header["Authorization"] != nil {
+			t := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
+			token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "error while parsing token"})
 				}
@@ -28,7 +31,7 @@ func Auth() gin.HandlerFunc {
 			}
 
 			if token.Valid {
-				claims, err := jwtutil.DecodeIntoClaims(c.Request.Header["Token"][0])
+				claims, err := jwtutil.DecodeIntoClaims(t)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 				}

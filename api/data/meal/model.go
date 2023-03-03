@@ -6,11 +6,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 )
 
 type Model interface {
 	Create(ctx context.Context, nm NewMeal) (primitive.ObjectID, error)
 	Update(ctx context.Context, id primitive.ObjectID, nm NewMeal) error
+	Delete(ctx context.Context, id primitive.ObjectID) error
 
 	QueryAll(ctx context.Context) ([]Meal, error)
 	QueryByID(ctx context.Context, id primitive.ObjectID) (*Meal, error)
@@ -50,8 +52,15 @@ func (m modelImpl) Create(ctx context.Context, nm NewMeal) (primitive.ObjectID, 
 
 func (m modelImpl) Update(ctx context.Context, id primitive.ObjectID, nm NewMeal) error {
 	coll := m.db.Database("elektron_canteen").Collection("meals")
-
+	log.Println(id)
 	_, err := coll.UpdateOne(ctx, bson.D{{"_id", id}}, bson.D{{"$set", bson.M{"name": nm.Name, "price": nm.Price, "additions": nm.Additions, "salads": nm.Salads}}})
+	return err
+}
+
+func (m modelImpl) Delete(ctx context.Context, id primitive.ObjectID) error {
+	coll := m.db.Database("elektron_canteen").Collection("meals")
+
+	_, err := coll.DeleteOne(ctx, bson.D{{"_id", id}})
 	return err
 }
 
