@@ -4,7 +4,6 @@ import (
 	"elektron-canteen/api/controllers"
 	"elektron-canteen/api/data/user"
 	jwtutil "elektron-canteen/foundation/jwt"
-
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,13 +33,14 @@ func (r *AuthRouter) login(c *gin.Context) {
 	if err := c.BindJSON(&nu); err != nil {
 		responseWithError(c, err)
 	}
-	user, err := r.controller.Login(nu)
+
+	u, err := r.controller.Login(nu)
 	if err != nil {
 		responseWithError(c, err)
 		return
 	}
 
-	jwtToken, err := jwtutil.Generate(*user)
+	jwtToken, err := jwtutil.Generate(*u)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successfull",

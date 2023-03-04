@@ -5,6 +5,7 @@ import (
 	"elektron-canteen/api/data/user"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthController struct {
@@ -35,6 +36,12 @@ func (c AuthController) Register(nu user.NewUser) error {
 		return errors.New("User already exists")
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(nu.Password), 10)
+	if err != nil {
+		return err
+	}
+
+	nu.Password = string(hashedPassword[:])
 	nu.Role = user.NORMAL_ROLE
 
 	if _, err = c.user.Create(ctx, nu); err != nil {
@@ -51,14 +58,14 @@ func (c AuthController) Login(nu user.NewUser) (*user.User, error) {
 		return nil, err
 	}
 
-	user, err := c.user.QueryByEmail(ctx, nu.Email)
+	u, err := c.user.QueryByEmail(ctx, nu.Email)
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("User doesn't exists")
 	}
 
-	if nu.Password != user.Password {
-		return nil, errors.New("Wrong password")
+	if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(nu.Password)); err != nil {
+		return nil, err
 	}
 
-	return user, err
+	return u, err
 }

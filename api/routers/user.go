@@ -55,6 +55,8 @@ func (r *UserRouter) getUserData(c *gin.Context) {
 		return
 	}
 
+	user.Password = ""
+
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
