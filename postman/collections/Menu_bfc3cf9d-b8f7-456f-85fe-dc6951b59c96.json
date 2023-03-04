@@ -1,0 +1,268 @@
+{
+	"info": {
+		"_postman_id": "04b14fa7-948b-4476-96c5-4539623cd412",
+		"name": "Menu",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Menu By Day",
+			"id": "ba683e80-5437-4f54-af65-bbf570e1372f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/menu/:day",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"menu",
+						":day"
+					],
+					"variable": [
+						{
+							"key": "day",
+							"value": "2023-03-03"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Menu Between Dates",
+			"id": "aeb8796f-d470-4666-b9f4-bc7d3a8c570d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/menu/:day",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"menu",
+						":day"
+					],
+					"variable": [
+						{
+							"id": "11aa3ff0-a077-4429-a02e-237dc18e9767",
+							"key": "day",
+							"value": "2023-03-02"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Menu",
+			"id": "55eb702e-8da5-47da-be1b-bbf54e24699f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2Nzc5NzAzODAsInJvbGUiOiJhZG1pbl9yb2xlIiwidXNlciI6IjY0MDEwOTIyMzc0NjAwM2YxYjY0MTBmYiJ9.oZNYgAmOrIqql0vh8VrWVkilvoofDwGi8iHbSsJ9BJY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"menus\": [\n        {\n            \"day\": \"2023-03-10\",\n            \"meals\": [\n                \"64010e12aa9c0c1ffb147c62\",\n                \"64010e1daa9c0c1ffb147c63\"\n            ],\n            \"availableMeals\": [\n                \"64010e12aa9c0c1ffb147c62\",\n                \"64010e1daa9c0c1ffb147c63\"\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/menu",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Menu",
+			"id": "3462e30b-c468-4b6c-badc-0e20da549034",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"day\": \"2023-03-03\",\r\n    \"meals\": [\r\n        \"64010e12aa9c0c1ffb147c62\"\r\n    ],\r\n    \"availableMeals\": [\r\n        \r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/menu",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Menu",
+			"id": "63b0f051-0f8d-4632-8313-1327b5198a64",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/menu/:day",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"menu",
+						":day"
+					],
+					"variable": [
+						{
+							"key": "day",
+							"value": "2023-03-02"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "a0c2cd8f-22b1-496c-8b0a-d48d4d76788a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "12f7f7a6-bdcb-488d-aed6-c271e20add9e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

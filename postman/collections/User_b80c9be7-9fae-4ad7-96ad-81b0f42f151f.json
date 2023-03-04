@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "df48cd20-867b-44f5-9c93-d8d315bd75be",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Data",
+			"id": "441bcc56-61f1-4ff4-ac7c-727062817a2f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2Nzc3NzUzMTIsInVzZXIiOiI2M2ZlMDk2MzA2MTYwYzZiZTQ1ZjFhNDEifQ.etH3eAlPe6TZimRy8tRfXvtDql_vf5bvjDD4_r_Z59o",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2Nzc4NzE5MDMsInJvbGUiOiJub3JtYWxfcm9sZSIsInVzZXIiOiI2NDAwYTUyYzM1ODk5NThlNWQxNDVjYmIifQ.nyPXhnx9bL4akBmv0tbNYE1lsFKa8QrHrguc51wRfLU",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}:{{port}}/user",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

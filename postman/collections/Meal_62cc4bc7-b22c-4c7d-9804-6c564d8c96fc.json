@@ -1,0 +1,250 @@
+{
+	"info": {
+		"_postman_id": "ef7bfc55-0a15-4918-bf3c-332936742bea",
+		"name": "Meal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Meals",
+			"id": "d7005f4f-b09a-49d5-8c6b-28d2271fe8cd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/meal",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"meal"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Meal By Id",
+			"id": "ccb2d4cb-dbf9-4b44-97b4-5015ece7a2da",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/meal/:id",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"meal",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "64010e1daa9c0c1ffb147c63"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Meal",
+			"id": "bc18dc7f-9fde-434a-ab20-87002b1de83b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2Nzc4OTg3MjEsInJvbGUiOiJhZG1pbl9yb2xlIiwidXNlciI6IjY0MDEwOTIyMzc0NjAwM2YxYjY0MTBmYiJ9.R_yokt4gqDoF-I8xjHjojG5TAi9yB4WLGYD8OEe4P0g",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Zapiekanka ziemniaczana\",\n    \"price\": 10,\n    \"additions\": [\"ryż\", \"kasza\"],\n    \"salads\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/meal",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"meal"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Meal",
+			"id": "dca89f8d-be15-4c0c-9237-009ed9b3fe80",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"64010e1daa9c0c1ffb147c63\",\n    \"name\": \"Kurczak po chińsku\",\n    \"price\": 12,\n    \"additions\": [\n        \"ryż\",\n        \"kasza\"\n    ],\n    \"salads\": [\n        \"buraki\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/meal/:id",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"meal",
+						":id"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "64010e1daa9c0c1ffb147c63"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Meal",
+			"id": "d1da5a32-a9e0-494a-bacb-566a82bf0e96",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/meal/:id",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"meal",
+						":id"
+					],
+					"variable": [
+						{
+							"id": "f74d8611-7ace-40a7-addc-e37688ba5a51",
+							"key": "id",
+							"value": "64010e1daa9c0c1ffb147c63"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
