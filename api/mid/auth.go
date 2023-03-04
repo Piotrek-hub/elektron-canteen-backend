@@ -52,6 +52,7 @@ func Auth() gin.HandlerFunc {
 				}
 
 				if user.Email != "" {
+					c.Request.Header["user_id"] = []string{claims["user"].(string)}
 					c.Next()
 				}
 			}

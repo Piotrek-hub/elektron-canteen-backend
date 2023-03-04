@@ -46,7 +46,7 @@ func (r *UserRouter) getUserData(c *gin.Context) {
 	user, err := r.controller.Get(userID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusForbidden, gin.H{
+			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "User doesnt exists",
 			})
 			return
