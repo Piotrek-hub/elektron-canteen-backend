@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"elektron-canteen/api/config"
 	"elektron-canteen/foundation/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,8 +19,7 @@ type Model interface {
 }
 
 type modelImpl struct {
-	db  *mongo.Client
-	cfg config.Config
+	db *mongo.Client
 }
 
 var instance Model

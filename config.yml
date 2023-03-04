@@ -1,6 +1,0 @@
-config:
-    version: 0.1
-    mongo_username: "dev"
-    mongo_password: "Qwer1234"
-    mongo_server: "localhost:27017" # nazwa serwera razem z portem
-    jwt_secret_key: ""

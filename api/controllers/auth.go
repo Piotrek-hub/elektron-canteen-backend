@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"context"
-	"elektron-canteen/api/config"
 	"elektron-canteen/api/data/user"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AuthController struct {
-	cfg       config.Config
 	user      user.Model
 	validator user.Validator
 }
@@ -18,7 +16,6 @@ func NewAuthController() *AuthController {
 	return &AuthController{
 		user:      user.Instance(),
 		validator: *user.NewValidator(),
-		cfg:       config.Load(),
 	}
 }
 
