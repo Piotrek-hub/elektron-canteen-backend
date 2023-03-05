@@ -3,10 +3,12 @@ package controllers
 import (
 	//	"context"
 	"context"
+	"elektron-canteen/api/controllers/utils"
 	"elektron-canteen/api/data/meal"
 	"elektron-canteen/api/data/menu"
 	"errors"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type MenuController struct {
@@ -21,6 +23,24 @@ func NewMenuController() *MenuController {
 		meal:      meal.Instance(),
 		validator: *menu.NewValidator(),
 	}
+}
+
+func (c *MenuController) GetRangeMenus(startDay, endDay string) ([]menu.Menu, error) {
+	ctx := context.Background()
+
+	startDate, err := time.Parse("2006-01-02", startDay)
+	if err != nil {
+
+	}
+
+	endDate, err := time.Parse("2006-01-02", endDay)
+	if err != nil {
+
+	}
+
+	dates := utils.GetDatesBetween(startDate, endDate)
+
+	return c.menu.QueryRanged(ctx, dates)
 }
 
 func (c MenuController) Add(mr menu.AddRequest) error {

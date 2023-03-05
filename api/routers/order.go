@@ -2,6 +2,7 @@ package routers
 
 import (
 	"elektron-canteen/api/controllers"
+	"elektron-canteen/api/controllers/utils"
 	"elektron-canteen/api/data/order"
 	"elektron-canteen/api/data/user"
 	"elektron-canteen/api/mid"
@@ -25,15 +26,14 @@ func NewOrderRouter(r *gin.Engine, c controllers.OrderController) *OrderRouter {
 func (r *OrderRouter) Initialize() {
 	r.router.Use(mid.Auth())
 
-	r.router.GET("/orders/user/:id", r.getUserOrders)
-	r.router.GET("/orders/:id", r.getOrder)
-	r.router.POST("/orders", r.addOrder)
+	r.router.GET("/orders/:order_id", r.getOrder)
+	r.router.GET("/orders/date/:date", r.getOrdersByDate)
+	r.router.GET("/orders/user/:user_id", r.getUserOrders)
+	r.router.POST("/orders/add", r.addOrder)
 	r.router.POST("/orders/cancel/:order_id", r.cancelOrder)
 
-	authorizedRoutes := r.router.Group("/admin")
-	authorizedRoutes.Use(mid.Role(user.ADMIN_ROLE))
-	authorizedRoutes.GET("/", r.getAllOrders)
-	authorizedRoutes.PATCH("/order/:id/:status", r.updateOrderStatus)
+	r.router.GET("/orders/all", mid.Role(user.ADMIN_ROLE), r.getAllOrders)
+	r.router.PATCH("/order/:order_id/:status", mid.Role(user.ADMIN_ROLE), r.updateOrderStatus)
 
 }
 
@@ -57,7 +57,7 @@ func (r *OrderRouter) cancelOrder(c *gin.Context) {
 }
 
 func (r *OrderRouter) updateOrderStatus(c *gin.Context) {
-	orderID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	orderID, err := primitive.ObjectIDFromHex(c.Param("order_id"))
 	if err != nil {
 		responseWithError(c, err)
 		return
@@ -74,7 +74,7 @@ func (r *OrderRouter) updateOrderStatus(c *gin.Context) {
 }
 
 func (r *OrderRouter) getOrder(c *gin.Context) {
-	orderID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	orderID, err := primitive.ObjectIDFromHex(c.Param("order_id"))
 	if err != nil {
 		responseWithError(c, err)
 		return
@@ -89,8 +89,20 @@ func (r *OrderRouter) getOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"order": order})
 }
 
+func (r *OrderRouter) getOrdersByDate(c *gin.Context) {
+	date := c.Param("date")
+
+	orders, err := r.controller.GetOrdersByDate(date)
+	if err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"date": date, "orders": orders})
+}
+
 func (r *OrderRouter) getUserOrders(c *gin.Context) {
-	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	userID, err := primitive.ObjectIDFromHex(c.Param("user_id"))
 	if err != nil {
 		responseWithError(c, err)
 		return
@@ -122,12 +134,20 @@ func (r *OrderRouter) addOrder(c *gin.Context) {
 		return
 	}
 
+	userID, err := primitive.ObjectIDFromHex(c.Request.Header["user_id"][0])
+	if err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	no.User = userID
+	no.Date = utils.UnixToFormattedDate(no.DueTime)
+
 	orderID, err := r.controller.AddOrder(no)
 	if err != nil {
 		responseWithError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "order added successfully", "orderId": orderID.Hex()})
-
+	c.JSON(http.StatusOK, gin.H{"message": "order added successfully", "order_id": orderID.Hex()})
 }

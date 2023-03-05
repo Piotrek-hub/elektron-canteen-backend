@@ -13,6 +13,7 @@ func Start() error {
 	routers.NewMenuRouter(r, *controllers.NewMenuController()).Initialize()
 	routers.NewUserRouter(r, *controllers.NewUserController()).Initialize()
 	routers.NewMealRouter(r, *controllers.NewMealController()).Initialize()
+	routers.NewOrderRouter(r, *controllers.NewOrderController()).Initialize()
 
 	r.Run()
 

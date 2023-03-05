@@ -14,10 +14,12 @@ type Model interface {
 	//Delete(ctx context.Context, id primitive.ObjectID) error
 
 	UpdateStatus(ctx context.Context, id primitive.ObjectID, status string) error
+
 	QueryAll(ctx context.Context) ([]Order, error)
 	QueryByNotStatus(ctx context.Context, status string) ([]Order, error)
 	QueryByUser(ctx context.Context, userID primitive.ObjectID) ([]Order, error)
-	QueryByID(ctx context.Context, orderID primitive.ObjectID) ([]Order, error)
+	QueryByID(ctx context.Context, orderID primitive.ObjectID) (*Order, error)
+	QueryByDate(ctx context.Context, date string) ([]Order, error)
 }
 
 type modelImpl struct {
@@ -118,10 +120,27 @@ func (m modelImpl) QueryByUser(ctx context.Context, userID primitive.ObjectID) (
 	return orders, nil
 }
 
-func (m modelImpl) QueryByID(ctx context.Context, orderID primitive.ObjectID) ([]Order, error) {
+func (m modelImpl) QueryByID(ctx context.Context, orderID primitive.ObjectID) (*Order, error) {
 	coll := m.db.Database("elektron_canteen").Collection("orders")
 
 	filter := bson.D{{"_id", orderID}}
+
+	var order Order
+
+	if err := coll.FindOne(ctx, filter).Decode(&order); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &order, nil
+		}
+		panic(err)
+	}
+
+	return &order, nil
+}
+
+func (m modelImpl) QueryByDate(ctx context.Context, date string) ([]Order, error) {
+	coll := m.db.Database("elektron_canteen").Collection("orders")
+
+	filter := bson.D{{"date", date}}
 
 	cur, err := coll.Find(ctx, filter)
 	if err != nil {

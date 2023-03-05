@@ -24,7 +24,8 @@ func NewMenuRouter(r *gin.Engine, c controllers.MenuController) *MenuRouter {
 
 func (r *MenuRouter) Initialize() {
 	r.router.Use(mid.Auth())
-	r.router.GET("/menu/:day", r.getMenu)
+	r.router.GET("/menu/:day", r.getMenuByDay)
+	r.router.GET("/menu/range/:start_day/:end_day", r.getRangeMenus)
 
 	securedRoutes := r.router.Group("/menu")
 	securedRoutes.Use(mid.Role(user.ADMIN_ROLE))
@@ -34,7 +35,19 @@ func (r *MenuRouter) Initialize() {
 	securedRoutes.DELETE("/:day", r.deleteMenu)
 }
 
-func (r *MenuRouter) getMenu(c *gin.Context) {
+func (r *MenuRouter) getRangeMenus(c *gin.Context) {
+	startDay := c.Param("start_day")
+	endDay := c.Param("end_day")
+	menus, err := r.controller.GetRangeMenus(startDay, endDay)
+	if err != nil {
+		responseWithError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"start_day": startDay, "end_day": endDay, "menus": menus})
+}
+
+func (r *MenuRouter) getMenuByDay(c *gin.Context) {
 	day := c.Param("day")
 
 	m, err := r.controller.GetByDay(day)

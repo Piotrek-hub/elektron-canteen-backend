@@ -4,6 +4,7 @@ import (
 	"context"
 	"elektron-canteen/api/data/meal"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 )
 
 type Menu struct {
@@ -32,13 +33,14 @@ func (m *Menu) ToResponse(ctx context.Context, model meal.Model) (*Response, err
 			return nil, err
 		}
 
-		for j := 0; j < len(m.AvailableMeals); j++ {
-			if m.AvailableMeals[j] == m.Meals[i] {
-				mr.AvailableMeals = append(mr.AvailableMeals, *mTmp)
-			}
-		}
-
 		mr.Meals = append(mr.Meals, *mTmp)
+	}
+
+	log.Println(m)
+	for i := 0; i < len(m.AvailableMeals); i++ {
+		if m.AvailableMeals[i] == mr.Meals[i].ID.Hex() {
+			mr.AvailableMeals = append(mr.AvailableMeals, mr.Meals[i])
+		}
 	}
 
 	return &mr, nil

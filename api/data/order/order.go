@@ -24,6 +24,7 @@ type Order struct {
 	Status        string             `json:"status"`
 	PaymentMethod string             `json:"paymentMethod"`
 	DueTime       string             `json:"dueTime"`
+	Date          string             `json:"date"`
 }
 
 type NewOrder struct {
@@ -32,6 +33,5 @@ type NewOrder struct {
 	Status        string             `json:"status"`
 	PaymentMethod string             `json:"paymentMethod"`
 	DueTime       string             `json:"dueTime"`
+	Date          string             `json:"date"`
 }
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzgwNDQzNjgsInJvbGUiOiJub3JtYWxfcm9sZSIsInVzZXIiOiI2NDAzNDZkZDA3ZWExNDZmYjAwYWY2MjEifQ.5SOKec4R7hNrHZIo3NoVfoddEbeHIbtS-8f9HC-86E4

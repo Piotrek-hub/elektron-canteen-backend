@@ -15,6 +15,7 @@ type Model interface {
 
 	QueryAll(ctx context.Context) ([]Menu, error)
 	QueryByDay(ctx context.Context, day string) (*Menu, error)
+	QueryRanged(ctx context.Context, days []string) ([]Menu, error)
 }
 
 type modelImpl struct {
@@ -87,4 +88,27 @@ func (m modelImpl) QueryByDay(ctx context.Context, day string) (*Menu, error) {
 	coll.FindOne(ctx, bson.D{{"day", day}}).Decode(&menu)
 
 	return &menu, nil
+}
+
+func (m modelImpl) QueryRanged(ctx context.Context, days []string) ([]Menu, error) {
+	coll := m.db.Database("elektron_canteen").Collection("menus")
+
+	filter := bson.M{
+		"day": bson.M{"$in": days},
+	}
+
+	var menus []Menu
+	cur, err := coll.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = cur.All(ctx, &menus); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return menus, nil
+		}
+		panic(err)
+	}
+
+	return menus, nil
 }
