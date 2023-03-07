@@ -43,7 +43,7 @@ func (r *AuthRouter) login(c *gin.Context) {
 	jwtToken, err := jwtutil.Generate(*u)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Login successfull",
+		"message": "Login successfully",
 		"token":   jwtToken,
 	})
 	return
@@ -61,8 +61,8 @@ func (r *AuthRouter) register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Register successfull",
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "User created successfully",
 	})
 	return
 }
