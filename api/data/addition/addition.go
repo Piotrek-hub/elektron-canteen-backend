@@ -7,3 +7,8 @@ type Addition struct {
 	Name  string             `bson:"name" json:"name"`
 	Price float32            `bson:"price" json:"price"`
 }
+
+type NewAddition struct {
+	Name  string  `bson:"name" json:"name"`
+	Price float32 `bson:"price" json:"price"`
+}

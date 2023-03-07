@@ -10,7 +10,7 @@ import (
 )
 
 type Model interface {
-	Create(ctx context.Context, a Addition) (primitive.ObjectID, error)
+	Create(ctx context.Context, na NewAddition) (primitive.ObjectID, error)
 	Update(ctx context.Context, id primitive.ObjectID, na Addition) error
 	Delete(ctx context.Context, id primitive.ObjectID) error
 
@@ -39,10 +39,10 @@ func Instance() Model {
 	return instance
 }
 
-func (m modelImpl) Create(ctx context.Context, a Addition) (primitive.ObjectID, error) {
+func (m modelImpl) Create(ctx context.Context, na NewAddition) (primitive.ObjectID, error) {
 	coll := m.db.Database("elektron_canteen").Collection("additions")
 
-	res, err := coll.InsertOne(ctx, a)
+	res, err := coll.InsertOne(ctx, na)
 	if err != nil {
 		return primitive.ObjectID{}, err
 	}

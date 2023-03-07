@@ -35,12 +35,12 @@ func (c AdditionController) GetByName(name string) (*addition.Addition, error) {
 	return c.addition.QueryByName(ctx, name)
 }
 
-func (c AdditionController) Create(a addition.Addition) (primitive.ObjectID, error) {
+func (c AdditionController) Create(na addition.NewAddition) (primitive.ObjectID, error) {
 	ctx := context.Background()
 
-	c.validator.ValidateAddition(a)
+	c.validator.ValidateAddition(na)
 
-	return c.addition.Create(ctx, a)
+	return c.addition.Create(ctx, na)
 }
 
 func (c AdditionController) Delete(id primitive.ObjectID) error {

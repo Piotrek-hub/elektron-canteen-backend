@@ -36,7 +36,6 @@ func (r *AdditionRouter) Initialize() {
 }
 
 func (r *AdditionRouter) getAll(c *gin.Context) {
-
 	additions, err := r.controller.GetAll()
 	if err != nil {
 		responseWithError(c, err)
@@ -74,13 +73,13 @@ func (r *AdditionRouter) getByName(c *gin.Context) {
 }
 
 func (r *AdditionRouter) createAddition(c *gin.Context) {
-	var a addition.Addition
-	if err := c.BindJSON(&a); err != nil {
+	var na addition.NewAddition
+	if err := c.BindJSON(&na); err != nil {
 		responseWithError(c, err)
 		return
 	}
 
-	id, err := r.controller.Create(a)
+	id, err := r.controller.Create(na)
 	if err != nil {
 		responseWithError(c, err)
 		return
