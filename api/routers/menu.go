@@ -30,7 +30,7 @@ func (r *MenuRouter) Initialize() {
 	securedRoutes := r.router.Group("/menu")
 	securedRoutes.Use(mid.Role(user.ADMIN_ROLE))
 
-	securedRoutes.POST("", r.addMenu)
+	securedRoutes.POST("", r.createMenu)
 	securedRoutes.PATCH("", r.updateMenu)
 	securedRoutes.DELETE("/:day", r.deleteMenu)
 }
@@ -70,7 +70,7 @@ func (r *MenuRouter) deleteMenu(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
 }
 
-func (r *MenuRouter) addMenu(c *gin.Context) {
+func (r *MenuRouter) createMenu(c *gin.Context) {
 	var mr menu.AddRequest
 
 	if err := c.BindJSON(&mr); err != nil {
@@ -83,7 +83,7 @@ func (r *MenuRouter) addMenu(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "add menu"})
+	c.JSON(http.StatusCreated, gin.H{"message": "add menu"})
 }
 
 func (r *MenuRouter) updateMenu(c *gin.Context) {
@@ -99,5 +99,5 @@ func (r *MenuRouter) updateMenu(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": m})
+	c.JSON(http.StatusOK, gin.H{"message": "Menu updated successfully"})
 }

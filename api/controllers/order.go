@@ -10,7 +10,6 @@ import (
 	"elektron-canteen/api/data/user"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 )
 
 type OrderController struct {
@@ -103,8 +102,6 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 	if err != nil {
 		return primitive.ObjectID{}, err
 	}
-
-	log.Println("TOTAL PRICE: ", totalPrice)
 
 	return c.order.Create(ctx, no)
 }

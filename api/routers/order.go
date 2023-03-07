@@ -29,7 +29,7 @@ func (r *OrderRouter) Initialize() {
 	r.router.GET("/orders/:order_id", r.getOrder)
 	r.router.GET("/orders/date/:date", r.getOrdersByDate)
 	r.router.GET("/orders/user/:user_id", r.getUserOrders)
-	r.router.POST("/orders/add", r.addOrder)
+	r.router.POST("/orders/add", r.createOrder)
 	r.router.POST("/orders/cancel/:order_id", r.cancelOrder)
 
 	r.router.GET("/orders/all", mid.Role(user.ADMIN_ROLE), r.getAllOrders)
@@ -127,7 +127,7 @@ func (r *OrderRouter) getAllOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"orders": orders})
 }
 
-func (r *OrderRouter) addOrder(c *gin.Context) {
+func (r *OrderRouter) createOrder(c *gin.Context) {
 	var no order.NewOrder
 	if err := c.BindJSON(&no); err != nil {
 		responseWithError(c, err)
@@ -149,5 +149,5 @@ func (r *OrderRouter) addOrder(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "order added successfully", "order_id": orderID.Hex()})
+	c.JSON(http.StatusCreated, gin.H{"message": "order added successfully", "order_id": orderID.Hex()})
 }

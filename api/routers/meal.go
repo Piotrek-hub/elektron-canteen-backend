@@ -30,7 +30,7 @@ func (r *MealRouter) Initialize() {
 	securedRoutes := r.router.Group("/meal")
 	securedRoutes.Use(mid.Role(user.ADMIN_ROLE))
 
-	securedRoutes.POST("", r.addMeal)
+	securedRoutes.POST("", r.createMeal)
 	securedRoutes.PATCH("/:id", r.updateMeal)
 	securedRoutes.DELETE("/:id", r.deleteMeal)
 }
@@ -65,7 +65,7 @@ func (r *MealRouter) getMeal(c *gin.Context) {
 	})
 }
 
-func (r *MealRouter) addMeal(c *gin.Context) {
+func (r *MealRouter) createMeal(c *gin.Context) {
 	var nm meal.NewMeal
 	if err := c.BindJSON(&nm); err != nil {
 		responseWithError(c, err)
@@ -77,7 +77,7 @@ func (r *MealRouter) addMeal(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"message": "Meal added successfully",
 	})
 }

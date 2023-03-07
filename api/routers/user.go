@@ -6,7 +6,6 @@ import (
 	jwtutil "elektron-canteen/foundation/jwt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 )
 
@@ -45,12 +44,6 @@ func (r *UserRouter) getUserData(c *gin.Context) {
 
 	user, err := r.controller.Get(userID)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "User doesnt exists",
-			})
-			return
-		}
 		responseWithError(c, err)
 		return
 	}
