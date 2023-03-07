@@ -2,11 +2,12 @@ package routers
 
 import (
 	"elektron-canteen/api/controllers"
+	"elektron-canteen/api/data/coupon"
+	"elektron-canteen/api/data/user"
 	"elektron-canteen/api/mid"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"strconv"
 )
 
 type CouponRouter struct {
@@ -25,12 +26,16 @@ func (r *CouponRouter) Initialize() {
 	cr := r.router.Group("/coupon")
 	cr.Use(mid.Auth())
 
-	cr.POST("/generate/:value", r.generateCoupon)
-	cr.POST("/redeem/:code", r.redeemCoupon)
+	cr.POST("/generate", mid.Role(user.ADMIN_ROLE), r.generateCoupon)
+	cr.POST("/redeem", r.redeemCoupon)
 }
 
 func (r *CouponRouter) redeemCoupon(c *gin.Context) {
-	code := c.Param("code")
+	var coupon coupon.Coupon
+	if err := c.BindJSON(&coupon); err != nil {
+		responseWithError(c, err)
+		return
+	}
 
 	userID, err := primitive.ObjectIDFromHex(c.Request.Header["user_id"][0])
 	if err != nil {
@@ -38,27 +43,28 @@ func (r *CouponRouter) redeemCoupon(c *gin.Context) {
 		return
 	}
 
-	if err = r.controller.Redeem(userID, code); err != nil {
+	if err = r.controller.Redeem(userID, coupon.Code); err != nil {
 		responseWithError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "coupon redeemed successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "coupon redeemed successfully"})
 
 }
 
 func (r *CouponRouter) generateCoupon(c *gin.Context) {
-	value, err := strconv.ParseFloat(c.Param("value"), 32)
-	if err != nil {
+	var coupon coupon.Coupon
+	if err := c.BindJSON(&coupon); err != nil {
 		responseWithError(c, err)
 		return
 	}
-	coupon, err := r.controller.Create(float32(value))
+
+	createdCoupon, err := r.controller.Create(coupon.Value)
 	if err != nil {
 		responseWithError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "coupon created successfully", "couponID": coupon.Code})
+	c.JSON(http.StatusCreated, gin.H{"message": "coupon created successfully", "couponID": createdCoupon.Code})
 
 }
