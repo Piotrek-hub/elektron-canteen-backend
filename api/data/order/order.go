@@ -21,6 +21,7 @@ type Order struct {
 	ID            primitive.ObjectID `bson:"_id" json:"id"`
 	Meal          primitive.ObjectID `json:"meal"`
 	User          primitive.ObjectID `json:"user"`
+	Additions     []string           `json:"additions"`
 	Status        string             `json:"status"`
 	PaymentMethod string             `json:"paymentMethod"`
 	DueTime       string             `json:"dueTime"`
@@ -30,6 +31,7 @@ type Order struct {
 type NewOrder struct {
 	Meal          primitive.ObjectID `json:"meal"`
 	User          primitive.ObjectID `json:"user"`
+	Additions     []string           `json:"additions"`
 	Status        string             `json:"status"`
 	PaymentMethod string             `json:"paymentMethod"`
 	DueTime       string             `json:"dueTime"`

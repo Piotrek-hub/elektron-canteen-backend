@@ -14,6 +14,8 @@ func Start() error {
 	routers.NewUserRouter(r, *controllers.NewUserController()).Initialize()
 	routers.NewMealRouter(r, *controllers.NewMealController()).Initialize()
 	routers.NewOrderRouter(r, *controllers.NewOrderController()).Initialize()
+	routers.NewCouponRouter(r, *controllers.NewCouponController()).Initialize()
+	routers.NewAdditionRouter(r, *controllers.NewAdditionController()).Initialize()
 
 	r.Run()
 

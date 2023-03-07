@@ -8,6 +8,7 @@ import (
 	"elektron-canteen/api/data/menu"
 	"errors"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"time"
 )
 
@@ -92,6 +93,9 @@ func (c MenuController) GetByDay(day string) (*menu.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println(day)
+	log.Println(menu)
 
 	mr, err := menu.ToResponse(ctx, c.meal)
 	if err != nil {

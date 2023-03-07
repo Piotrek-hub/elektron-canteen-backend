@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"elektron-canteen/api/data/addition"
 	"elektron-canteen/api/data/meal"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,12 +11,14 @@ import (
 
 type MealController struct {
 	meal      meal.Model
+	addition  addition.Model
 	validator meal.Validator
 }
 
 func NewMealController() *MealController {
 	return &MealController{
 		meal:      meal.Instance(),
+		addition:  addition.Instance(),
 		validator: *meal.NewValidator(),
 	}
 }
@@ -61,14 +64,33 @@ func (c MealController) Delete(id primitive.ObjectID) error {
 	return c.meal.Delete(ctx, id)
 }
 
-func (c MealController) GetAll() ([]meal.Meal, error) {
+func (c MealController) GetAll() ([]meal.Response, error) {
 	ctx := context.Background()
+	meals, err := c.meal.QueryAll(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	return c.meal.QueryAll(ctx)
+	var mr []meal.Response
+	for _, meal := range meals {
+		r, err := meal.ToResponse(ctx, c.addition)
+		if err != nil {
+			return nil, err
+		}
+
+		mr = append(mr, *r)
+	}
+
+	return mr, nil
 }
 
-func (c MealController) GetByID(id primitive.ObjectID) (*meal.Meal, error) {
+func (c MealController) GetByID(id primitive.ObjectID) (*meal.Response, error) {
 	ctx := context.Background()
 
-	return c.meal.QueryByID(ctx, id)
+	meal, err := c.meal.QueryByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return meal.ToResponse(ctx, c.addition)
 }

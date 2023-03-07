@@ -43,6 +43,7 @@ func (c AuthController) Register(nu user.NewUser) error {
 
 	nu.Password = string(hashedPassword[:])
 	nu.Role = user.NORMAL_ROLE
+	nu.Points = 0
 
 	if _, err = c.user.Create(ctx, nu); err != nil {
 		return err

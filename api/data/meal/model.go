@@ -53,7 +53,7 @@ func (m modelImpl) Create(ctx context.Context, nm NewMeal) (primitive.ObjectID, 
 func (m modelImpl) Update(ctx context.Context, id primitive.ObjectID, nm NewMeal) error {
 	coll := m.db.Database("elektron_canteen").Collection("meals")
 	log.Println(id)
-	_, err := coll.UpdateOne(ctx, bson.D{{"_id", id}}, bson.D{{"$set", bson.M{"name": nm.Name, "price": nm.Price, "additions": nm.Additions, "salads": nm.Salads}}})
+	_, err := coll.UpdateOne(ctx, bson.D{{"_id", id}}, bson.D{{"$set", bson.M{"name": nm.Name, "price": nm.Price, "additions": nm.Additions}}})
 	return err
 }
 

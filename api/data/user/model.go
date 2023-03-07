@@ -10,6 +10,7 @@ import (
 
 type Model interface {
 	Create(ctx context.Context, nu NewUser) (primitive.ObjectID, error)
+	UpdatePoints(ctx context.Context, userID primitive.ObjectID, points float32) error
 	// Update(ctx context.Context, id primitive.ObjectID, uu UpdateUser) (*User, error)
 	//Delete(ctx context.Context, id primitive.ObjectID) error
 
@@ -47,6 +48,17 @@ func (m modelImpl) Create(ctx context.Context, nu NewUser) (primitive.ObjectID, 
 		return primitive.ObjectID{}, err
 	}
 	return result.InsertedID.(primitive.ObjectID), nil
+}
+
+func (m modelImpl) UpdatePoints(ctx context.Context, userID primitive.ObjectID, points float32) error {
+	coll := m.db.Database("elektron_canteen").Collection("users")
+
+	_, err := coll.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"points": points}})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m modelImpl) QueryAll(ctx context.Context) ([]User, error) {

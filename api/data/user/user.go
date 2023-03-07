@@ -13,6 +13,7 @@ type User struct {
 	Role     string             `json:"role"`
 	Name     string             `json:"name"`
 	Surname  string             `json:"surname"`
+	Points   float32            `json:"points"`
 	Password string             `json:"password"`
 }
 
@@ -21,6 +22,7 @@ type NewUser struct {
 	Name     string `json:"name"`
 	Role     string `json:"role"`
 	Surname  string `json:"surname"`
+	Points   int    `json:"points"`
 	Password string `json:"password"`
 }
 

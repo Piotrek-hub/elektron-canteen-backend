@@ -3,8 +3,11 @@ package controllers
 import (
 	"context"
 	"elektron-canteen/api/controllers/utils"
+	"elektron-canteen/api/data/addition"
+	"elektron-canteen/api/data/meal"
 	"elektron-canteen/api/data/menu"
 	"elektron-canteen/api/data/order"
+	"elektron-canteen/api/data/user"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
@@ -13,6 +16,9 @@ import (
 type OrderController struct {
 	order     order.Model
 	menu      menu.Model
+	user      user.Model
+	meal      meal.Model
+	addition  addition.Model
 	validator *order.Validator
 }
 
@@ -20,6 +26,9 @@ func NewOrderController() *OrderController {
 	return &OrderController{
 		order:     order.Instance(),
 		menu:      menu.Instance(),
+		user:      user.Instance(),
+		meal:      meal.Instance(),
+		addition:  addition.Instance(),
 		validator: order.NewValidator(),
 	}
 }
@@ -42,18 +51,60 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		return primitive.ObjectID{}, err
 	}
 
-	log.Println(utils.UnixToFormattedDate(no.DueTime))
-	var isFound = false
+	var isMealFound = false
 	for _, am := range todayMenu.AvailableMeals {
 		if no.Meal.Hex() == am {
-			isFound = true
+			isMealFound = true
 			break
 		}
 	}
-
-	if !isFound {
+	if !isMealFound {
 		return primitive.ObjectID{}, errors.New("meal is not available")
 	}
+
+	additions := []addition.Addition{}
+	for _, addition := range no.Additions {
+		id, err := primitive.ObjectIDFromHex(addition)
+		if err != nil {
+			return primitive.ObjectID{}, err
+		}
+
+		a, err := c.addition.QueryByID(ctx, id)
+		if err != nil {
+			return primitive.ObjectID{}, err
+		}
+
+		additions = append(additions, *a)
+	}
+
+	user, err := c.user.QueryByID(ctx, no.User)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	meal, err := c.meal.QueryByID(ctx, no.Meal)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	var totalPrice float32
+	for _, a := range additions {
+		totalPrice += a.Price
+	}
+	totalPrice += meal.Price
+
+	if user.Points-totalPrice < 0 {
+		return primitive.ObjectID{}, errors.New("user has not enough points")
+	}
+
+	newPoints := user.Points - totalPrice
+
+	err = c.user.UpdatePoints(ctx, user.ID, newPoints)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	log.Println("TOTAL PRICE: ", totalPrice)
 
 	return c.order.Create(ctx, no)
 }
@@ -108,6 +159,7 @@ func (c *OrderController) CancelOrder(userID, orderID primitive.ObjectID) error 
 		if uo.ID == orderID {
 			if uo.Status == order.WAITING {
 				c.order.UpdateStatus(ctx, uo.ID, order.CANCELED)
+
 				return nil
 			} else {
 				return errors.New("Cannot cancel order, order status: " + uo.Status)
