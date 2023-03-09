@@ -24,7 +24,7 @@ func (v Validator) ValidateMenus(menus []Menu) error {
 		for j := 0; j < len(menus); j++ {
 			if i != j {
 				if menus[i].Day == menus[j].Day {
-					return errors.New("menu copied, menu day: " + menus[i].Day)
+					return errors.New("menu already exists, menu day: " + menus[i].Day)
 				}
 			}
 		}

@@ -38,7 +38,10 @@ func (c AdditionController) GetByName(name string) (*addition.Addition, error) {
 func (c AdditionController) Create(na addition.NewAddition) (primitive.ObjectID, error) {
 	ctx := context.Background()
 
-	c.validator.ValidateAddition(na)
+	err := c.validator.ValidateAddition(na)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
 
 	return c.addition.Create(ctx, na)
 }

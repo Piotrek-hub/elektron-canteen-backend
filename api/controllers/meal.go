@@ -36,7 +36,7 @@ func (c MealController) Add(nm meal.NewMeal) error {
 	}
 
 	if m != nil {
-		return errors.New("Meal already exists")
+		return errors.New("meal already exists")
 	}
 
 	_, err = c.meal.Create(ctx, nm)

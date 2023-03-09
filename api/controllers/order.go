@@ -86,18 +86,24 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		return primitive.ObjectID{}, err
 	}
 
+	allOrders, err := c.order.QueryByDate(ctx, utils.UnixToFormattedDate(no.DueTime))
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+	ordersAmount := len(allOrders)
+	no.Number = ordersAmount + 1
+
 	var totalPrice float32
 	for _, a := range additions {
 		totalPrice += a.Price
 	}
 	totalPrice += meal.Price
-
 	if user.Points-totalPrice < 0 {
 		return primitive.ObjectID{}, errors.New("user has not enough points")
 	}
+	no.Price = totalPrice
 
 	newPoints := user.Points - totalPrice
-
 	err = c.user.UpdatePoints(ctx, user.ID, newPoints)
 	if err != nil {
 		return primitive.ObjectID{}, err
@@ -148,6 +154,12 @@ func (c *OrderController) GetOrder(orderID primitive.ObjectID) (*order.Order, er
 func (c *OrderController) CancelOrder(userID, orderID primitive.ObjectID) error {
 	ctx := context.Background()
 	userOrders, err := c.GetUserOrders(userID)
+
+	if err != nil {
+		return err
+	}
+
+	user, err := c.user.QueryByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -155,7 +167,18 @@ func (c *OrderController) CancelOrder(userID, orderID primitive.ObjectID) error 
 	for _, uo := range userOrders {
 		if uo.ID == orderID {
 			if uo.Status == order.WAITING {
-				c.order.UpdateStatus(ctx, uo.ID, order.CANCELED)
+				err := c.order.UpdateStatus(ctx, uo.ID, order.CANCELED)
+				if err != nil {
+					return err
+				}
+
+				if uo.PaymentMethod == order.ONLINE_PAYMENT {
+					newPoints := user.Points + uo.Price
+					err := c.user.UpdatePoints(ctx, user.ID, newPoints)
+					if err != nil {
+						return err
+					}
+				}
 
 				return nil
 			} else {

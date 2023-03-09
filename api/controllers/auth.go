@@ -33,7 +33,7 @@ func (c AuthController) Register(nu user.NewUser) error {
 	}
 
 	if u != nil {
-		return errors.New("User already exists")
+		return errors.New("user already exists")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(nu.Password), 10)

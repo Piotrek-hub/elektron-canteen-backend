@@ -26,6 +26,8 @@ type Order struct {
 	PaymentMethod string             `json:"paymentMethod"`
 	DueTime       string             `json:"dueTime"`
 	Date          string             `json:"date"`
+	Price         float32            `json:"price"`
+	Number        int                `json:"number"`
 }
 
 type NewOrder struct {
@@ -36,4 +38,6 @@ type NewOrder struct {
 	PaymentMethod string             `json:"paymentMethod"`
 	DueTime       string             `json:"dueTime"`
 	Date          string             `json:"date"`
+	Price         float32            `json:"price"`
+	Number        int                `json:"number"`
 }
