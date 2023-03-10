@@ -83,7 +83,7 @@ func (r *MenuRouter) createMenu(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "add menu"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Menu created successfully"})
 }
 
 func (r *MenuRouter) updateMenu(c *gin.Context) {

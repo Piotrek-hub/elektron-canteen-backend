@@ -37,6 +37,7 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 
 	no.Status = order.WAITING
 
+	// Validating new order
 	if err := c.validator.ValidateOrder(no); err != nil {
 		return primitive.ObjectID{}, err
 	}
@@ -45,6 +46,7 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		return primitive.ObjectID{}, err
 	}
 
+	// Check if meal is in menu
 	todayMenu, err := c.menu.QueryByDay(ctx, utils.UnixToFormattedDate(no.DueTime))
 	if err != nil {
 		return primitive.ObjectID{}, err
@@ -61,6 +63,7 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		return primitive.ObjectID{}, errors.New("meal is not available")
 	}
 
+	// Query additions
 	additions := []addition.Addition{}
 	for _, addition := range no.Additions {
 		id, err := primitive.ObjectIDFromHex(addition)
@@ -76,22 +79,39 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		additions = append(additions, *a)
 	}
 
-	user, err := c.user.QueryByID(ctx, no.User)
-	if err != nil {
-		return primitive.ObjectID{}, err
-	}
-
-	meal, err := c.meal.QueryByID(ctx, no.Meal)
-	if err != nil {
-		return primitive.ObjectID{}, err
-	}
-
+	// Increase order number
 	allOrders, err := c.order.QueryByDate(ctx, utils.UnixToFormattedDate(no.DueTime))
 	if err != nil {
 		return primitive.ObjectID{}, err
 	}
 	ordersAmount := len(allOrders)
 	no.Number = ordersAmount + 1
+
+	// Check if meal contains additions
+	meal, err := c.meal.QueryByID(ctx, no.Meal)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	for _, addition := range meal.Additions {
+		var isAdditionFound = false
+		for _, orderAddition := range no.Additions {
+			if orderAddition == addition {
+				isAdditionFound = true
+				break
+			}
+		}
+
+		if !isAdditionFound {
+			return primitive.ObjectID{}, errors.New("meal doesn't contains that addition")
+		}
+	}
+
+	// Calculate needed points amount
+	user, err := c.user.QueryByID(ctx, no.User)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
 
 	var totalPrice float32
 	for _, a := range additions {
@@ -146,9 +166,14 @@ func (c *OrderController) GetOrdersByDate(date string) ([]order.Order, error) {
 	return c.order.QueryByDate(ctx, date)
 }
 
-func (c *OrderController) GetOrder(orderID primitive.ObjectID) (*order.Order, error) {
+func (c *OrderController) GetOrder(orderID primitive.ObjectID) (*order.Response, error) {
 	ctx := context.Background()
-	return c.order.QueryByID(ctx, orderID)
+	o, err := c.order.QueryByID(ctx, orderID)
+	if err != nil {
+		return nil, err
+	}
+
+	return o.ToResponse(ctx, c.meal, c.addition)
 }
 
 func (c *OrderController) CancelOrder(userID, orderID primitive.ObjectID) error {
