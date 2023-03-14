@@ -2,39 +2,77 @@ package routers
 
 import (
 	"elektron-canteen/api/controllers"
-	"elektron-canteen/api/controllers/utils"
 	"elektron-canteen/api/data/order"
 	"elektron-canteen/api/data/user"
 	"elektron-canteen/api/mid"
+	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
 type OrderRouter struct {
-	router     *gin.Engine
-	controller controllers.OrderController
+	router       *gin.Engine
+	controller   controllers.OrderController
+	orderChannel chan *order.Response
 }
 
 func NewOrderRouter(r *gin.Engine, c controllers.OrderController) *OrderRouter {
 	return &OrderRouter{
-		router:     r,
-		controller: c,
+		router:       r,
+		controller:   c,
+		orderChannel: make(chan *order.Response),
 	}
 }
 
 func (r *OrderRouter) Initialize() {
-	r.router.Use(mid.Auth())
+	or := r.router.Group("/order")
+	or.Use(mid.Auth())
 
-	r.router.GET("/orders/:order_id", r.getOrder)
-	r.router.GET("/orders/date/:date", r.getOrdersByDate)
-	r.router.GET("/orders/user/:user_id", r.getUserOrders)
-	r.router.POST("/orders/add", r.createOrder)
-	r.router.POST("/orders/cancel/:order_id", r.cancelOrder)
+	or.GET("/:order_id", r.getOrder)
+	or.GET("/date/:date", r.getOrdersByDate)
+	or.GET("/user/:user_id", r.getUserOrders)
+	or.POST("/add", r.createOrder)
+	or.POST("/cancel/:order_id", r.cancelOrder)
 
-	r.router.GET("/orders/all", mid.Role(user.ADMIN_ROLE), r.getAllOrders)
-	r.router.PATCH("/order/:order_id/:status", mid.Role(user.ADMIN_ROLE), r.updateOrderStatus)
+	or.GET("/all", mid.Role(user.ADMIN_ROLE), r.getAllOrders)
+	or.GET("/all/ws", mid.Role(user.ADMIN_ROLE), r.getAllOrdersLive)
+	or.PATCH("/:order_id/:status", mid.Role(user.ADMIN_ROLE), r.updateOrderStatus)
 
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func (r *OrderRouter) getAllOrdersLive(c *gin.Context) {
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		responseWithError(c, err)
+		return
+	}
+	defer ws.Close()
+
+	go r.controller.ListenForOrders(r.orderChannel)
+	for {
+		no := <-r.orderChannel
+		if no == nil {
+			responseWithError(c, errors.New("error with websocket"))
+			return
+		}
+
+		orderJson, err := json.Marshal(no)
+		if err != nil {
+			responseWithError(c, err)
+			return
+		}
+
+		ws.WriteMessage(1, orderJson)
+	}
 }
 
 func (r *OrderRouter) cancelOrder(c *gin.Context) {
@@ -141,7 +179,6 @@ func (r *OrderRouter) createOrder(c *gin.Context) {
 	}
 
 	no.User = userID
-	no.Date = utils.UnixToFormattedDate(no.DueTime)
 
 	orderID, err := r.controller.AddOrder(no)
 	if err != nil {

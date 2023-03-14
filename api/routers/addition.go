@@ -3,6 +3,7 @@ package routers
 import (
 	"elektron-canteen/api/controllers"
 	"elektron-canteen/api/data/addition"
+	"elektron-canteen/api/data/user"
 	"elektron-canteen/api/mid"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,15 +24,14 @@ func NewAdditionRouter(r *gin.Engine, c controllers.AdditionController) *Additio
 
 func (r *AdditionRouter) Initialize() {
 	ar := r.router.Group("/addition")
-	ar.Use(mid.Auth())
 
 	ar.GET("/id/:id", r.getById)
 	ar.GET("/name/:name", r.getByName)
 	ar.GET("/all", r.getAll)
 
-	ar.POST("/create", r.createAddition)
-	ar.POST("/update/:id")
-	ar.DELETE("/delete/:id", r.deleteAddition)
+	ar.POST("/create", mid.Auth(), mid.Role(user.ADMIN_ROLE), r.createAddition)
+	ar.POST("/update/:id", mid.Auth(), mid.Role(user.ADMIN_ROLE))
+	ar.DELETE("/delete/:id", mid.Auth(), mid.Role(user.ADMIN_ROLE), r.deleteAddition)
 
 }
 

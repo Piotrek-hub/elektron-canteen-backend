@@ -22,8 +22,7 @@ func NewUserRouter(r *gin.Engine, c controllers.UserController) *UserRouter {
 }
 
 func (r *UserRouter) Initialize() {
-	r.router.Use(mid.Auth())
-	r.router.GET("/user", r.getUserData)
+	r.router.GET("/user", mid.Auth(), r.getUserData)
 }
 
 func (r *UserRouter) getUserData(c *gin.Context) {
@@ -42,7 +41,7 @@ func (r *UserRouter) getUserData(c *gin.Context) {
 		panic(err)
 	}
 
-	user, err := r.controller.Get(userID)
+	user, err := r.controller.GetByID(userID)
 	if err != nil {
 		responseWithError(c, err)
 		return

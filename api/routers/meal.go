@@ -23,16 +23,13 @@ func NewMealRouter(r *gin.Engine, c controllers.MealController) *MealRouter {
 }
 
 func (r *MealRouter) Initialize() {
-	r.router.Use(mid.Auth())
-	r.router.GET("/meal", r.getMeals)
-	r.router.GET("/meal/:id", r.getMeal)
+	mr := r.router.Group("/meal")
+	mr.GET("/", r.getMeals)
+	mr.GET("/meal/:id", r.getMeal)
 
-	securedRoutes := r.router.Group("/meal")
-	securedRoutes.Use(mid.Role(user.ADMIN_ROLE))
-
-	securedRoutes.POST("", r.createMeal)
-	securedRoutes.PATCH("/:id", r.updateMeal)
-	securedRoutes.DELETE("/:id", r.deleteMeal)
+	mr.POST("", mid.Role(user.ADMIN_ROLE), r.createMeal)
+	mr.PATCH("/:id", mid.Role(user.ADMIN_ROLE), r.updateMeal)
+	mr.DELETE("/:id", mid.Role(user.ADMIN_ROLE), r.deleteMeal)
 }
 
 func (r *MealRouter) getMeals(c *gin.Context) {
