@@ -19,6 +19,7 @@ type OrderController struct {
 	meal      meal.Model
 	addition  addition.Model
 	validator *order.Validator
+	oc        chan primitive.ObjectID
 }
 
 func NewOrderController() *OrderController {
@@ -29,6 +30,7 @@ func NewOrderController() *OrderController {
 		meal:      meal.Instance(),
 		addition:  addition.Instance(),
 		validator: order.NewValidator(),
+		oc:        make(chan primitive.ObjectID),
 	}
 }
 
@@ -36,6 +38,7 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 	ctx := context.Background()
 
 	no.Status = order.WAITING
+	no.Date = utils.UnixToFormattedDate(no.DueTime)
 
 	// Validating new order
 	if err := c.validator.ValidateOrder(no); err != nil {
@@ -93,19 +96,19 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		return primitive.ObjectID{}, err
 	}
 
-	for _, addition := range meal.Additions {
-		var isAdditionFound = false
-		for _, orderAddition := range no.Additions {
-			if orderAddition == addition {
-				isAdditionFound = true
-				break
-			}
-		}
-
-		if !isAdditionFound {
-			return primitive.ObjectID{}, errors.New("meal doesn't contains that addition")
-		}
-	}
+	//for _, addition := range meal.Additions {
+	//	var isAdditionFound = false
+	//	for _, orderAddition := range no.Additions {
+	//		if orderAddition == addition {
+	//			isAdditionFound = true
+	//			break
+	//		}
+	//	}
+	//
+	//	if !isAdditionFound {
+	//		return primitive.ObjectID{}, errors.New("meal doesn't contains that addition")
+	//	}
+	//}
 
 	// Calculate needed points amount
 	user, err := c.user.QueryByID(ctx, no.User)
@@ -129,7 +132,14 @@ func (c *OrderController) AddOrder(no order.NewOrder) (primitive.ObjectID, error
 		return primitive.ObjectID{}, err
 	}
 
-	return c.order.Create(ctx, no)
+	res, err := c.order.Create(ctx, no)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	c.oc <- res
+
+	return res, nil
 }
 
 func (c *OrderController) UpdateOrderStatus(orderID primitive.ObjectID, status string) error {
@@ -219,4 +229,23 @@ func (c *OrderController) GetUserOrders(userID primitive.ObjectID) ([]order.Orde
 	ctx := context.Background()
 	return c.order.QueryByUser(ctx, userID)
 
+}
+
+func (c *OrderController) ListenForOrders(out chan *order.Response) {
+	ctx := context.Background()
+
+	for {
+		orderID := <-c.oc
+		o, err := c.order.QueryByID(ctx, orderID)
+		if err != nil {
+			out <- nil
+		}
+
+		or, err := o.ToResponse(ctx, c.meal, c.addition)
+		if err != nil {
+			out <- nil
+		}
+
+		out <- or
+	}
 }

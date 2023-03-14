@@ -20,6 +20,8 @@ type Model interface {
 	QueryByUser(ctx context.Context, userID primitive.ObjectID) ([]Order, error)
 	QueryByID(ctx context.Context, orderID primitive.ObjectID) (*Order, error)
 	QueryByDate(ctx context.Context, date string) ([]Order, error)
+
+	//Watch(ctx context.Context, out chan Order)
 }
 
 type modelImpl struct {
@@ -157,3 +159,21 @@ func (m modelImpl) QueryByDate(ctx context.Context, date string) ([]Order, error
 
 	return orders, nil
 }
+
+//func (m modelImpl) Watch(ctx context.Context, out chan Order) {
+//	coll := m.db.Database("elektron_canteen").Collection("orders")
+//	ordersStream, err := coll.Watch(ctx, mongo.Pipeline{})
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	defer ordersStream.Close(ctx)
+//	for ordersStream.Next(ctx) {
+//		var order Order
+//		if err := ordersStream.Decode(&order); err != nil {
+//			panic(err)
+//		}
+//
+//		out <- order
+//	}
+//}

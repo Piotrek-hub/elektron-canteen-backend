@@ -21,6 +21,9 @@ type Response struct {
 func (m *Menu) ToResponse(ctx context.Context, model meal.Model) (*Response, error) {
 	var mr Response
 	mr.Day = m.Day
+	mr.Meals = make([]meal.Meal, 0)
+	mr.AvailableMeals = make([]meal.Meal, 0)
+
 	for i := 0; i < len(m.Meals); i++ {
 		mealID, err := primitive.ObjectIDFromHex(m.Meals[i])
 		if err != nil {

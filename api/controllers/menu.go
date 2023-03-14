@@ -30,12 +30,12 @@ func (c *MenuController) GetRangeMenus(startDay, endDay string) ([]menu.Menu, er
 
 	startDate, err := time.Parse("2006-01-02", startDay)
 	if err != nil {
-
+		return nil, err
 	}
 
 	endDate, err := time.Parse("2006-01-02", endDay)
 	if err != nil {
-
+		return nil, err
 	}
 
 	dates := utils.GetDatesBetween(startDate, endDate)
@@ -88,12 +88,12 @@ func (c MenuController) GetByDay(day string) (*menu.Response, error) {
 		return nil, err
 	}
 
-	menu, err := c.menu.QueryByDay(ctx, day)
+	m, err := c.menu.QueryByDay(ctx, day)
 	if err != nil {
 		return nil, err
 	}
 
-	mr, err := menu.ToResponse(ctx, c.meal)
+	mr, err := m.ToResponse(ctx, c.meal)
 	if err != nil {
 		return nil, err
 	}

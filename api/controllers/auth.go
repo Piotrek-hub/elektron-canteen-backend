@@ -3,7 +3,7 @@ package controllers
 import (
 	"context"
 	"elektron-canteen/api/data/user"
-	"github.com/pkg/errors"
+	"errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
