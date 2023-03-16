@@ -27,6 +27,10 @@ func (c AuthController) Register(nu user.NewUser) error {
 		return err
 	}
 
+	if err := c.validator.ValidatePassword(nu.Password); err != nil {
+		return err
+	}
+
 	u, err := c.user.QueryByEmail(ctx, nu.Email)
 	if err != nil && err != mongo.ErrNoDocuments {
 		return err
